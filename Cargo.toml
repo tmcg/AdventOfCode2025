@@ -1,0 +1,69 @@
+[workspace]
+members = ["crates/*"]
+
+[package]
+name = "advent2025"
+version = "1.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+advent = { path = "crates/advent" }
+just = "1.43.1"
+itertools = "0.14.0"
+nom = "8.0.0"
+regex = "1.12.2"
+glam = "0.30.9"
+
+[[bin]]
+name = "day01"
+path = "src/01.rs"
+
+#[[bin]]
+#name = "day02"
+#path = "src/02.rs"
+
+#[[bin]]
+#name = "day03"
+#path = "src/03.rs"
+
+#[[bin]]
+#name = "day04"
+#path = "src/04.rs"
+
+#[[bin]]
+#name = "day05"
+#path = "src/05.rs"
+
+#[[bin]]
+#name = "day06"
+#path = "src/06.rs"
+
+#[[bin]]
+#name = "day07"
+#path = "src/07.rs"
+
+#[[bin]]
+#name = "day08"
+#path = "src/08.rs"
+
+#[[bin]]
+#name = "day09"
+#path = "src/09.rs"
+
+#[[bin]]
+#name = "day10"
+#path = "src/10.rs"
+
+#[[bin]]
+#name = "day11"
+#path = "src/11.rs"
+
+#[[bin]]
+#name = "day12"
+#path = "src/12.rs"
+
+#[[bin]]
+#name = "day13"
+#path = "src/13.rs"
+
