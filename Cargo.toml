@@ -19,9 +19,9 @@ glam = "0.30.9"
 name = "day01"
 path = "src/01.rs"
 
-#[[bin]]
-#name = "day02"
-#path = "src/02.rs"
+[[bin]]
+name = "day02"
+path = "src/02.rs"
 
 #[[bin]]
 #name = "day03"
