@@ -50,10 +50,6 @@ impl From<&str> for InputModel {
 }
 
 impl BatteryBank {
-    fn size(&self) -> usize {
-        self.batteries.len()
-    }
-
     fn max_joltage(&self, part2: bool) -> i64 {
         match part2 {
             false => self.max_joltage_part1(),
@@ -62,26 +58,7 @@ impl BatteryBank {
     }
 
     fn max_joltage_part1(&self) -> i64 {
-        let mut result = 0;
-        if self.size() >= 2 {
-            let highest = self.batteries.iter().max_by_key(|b| b.capacity).unwrap();
-            let highest_left = self.batteries.iter().filter(|b| b.index < highest.index).max_by_key(|b| b.capacity);
-            let highest_right = self.batteries.iter().filter(|b| b.index > highest.index).max_by_key(|b| b.capacity);
-
-            let left_capacity = match highest_left {
-                Some(b) => b.capacity * 10 + highest.capacity,
-                None => 0,
-            };
-
-            let right_capacity = match highest_right {
-                Some(b) => highest.capacity * 10 + b.capacity,
-                None => 0,
-            };
-
-            result = left_capacity.max(right_capacity);
-        }
-
-        result
+        self.find_highest(2)
     }
 
     fn max_joltage_part2(&self) -> i64 {

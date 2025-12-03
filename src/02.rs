@@ -134,23 +134,26 @@ mod tests {
 
     #[test]
     fn test_is_valid_id_part1() {
-        assert_eq!(ProductRange::is_valid_id_part1(1212), false);
-        assert_eq!(ProductRange::is_valid_id_part1(123123), false);
-        assert_eq!(ProductRange::is_valid_id_part1(123456), true);
-        assert_eq!(ProductRange::is_valid_id_part1(112233), true);
+        assert_eq_false(ProductRange::is_valid_id_part1(1212));
+        assert_eq_false(ProductRange::is_valid_id_part1(123123));
+        assert_eq_true(ProductRange::is_valid_id_part1(123456));
+        assert_eq_true(ProductRange::is_valid_id_part1(112233));
     }
 
     #[test]
     fn test_is_valid_id_part2() {
-        assert_eq!(ProductRange::is_valid_id_part2(1212), false);
-        assert_eq!(ProductRange::is_valid_id_part2(123123), false);
-        assert_eq!(ProductRange::is_valid_id_part2(123456), true);
-        assert_eq!(ProductRange::is_valid_id_part2(112233), true);
-        assert_eq!(ProductRange::is_valid_id_part2(121212), false);
-        assert_eq!(ProductRange::is_valid_id_part2(121213), true);
-        assert_eq!(ProductRange::is_valid_id_part2(123123122), true);
-        assert_eq!(ProductRange::is_valid_id_part2(123123123), false);
+        assert_eq_false(ProductRange::is_valid_id_part2(1212));
+        assert_eq_false(ProductRange::is_valid_id_part2(123123));
+        assert_eq_false(ProductRange::is_valid_id_part2(121212));
+        assert_eq_false(ProductRange::is_valid_id_part2(123123123));
+        assert_eq_true(ProductRange::is_valid_id_part2(123456));
+        assert_eq_true(ProductRange::is_valid_id_part2(112233));
+        assert_eq_true(ProductRange::is_valid_id_part2(121213));
+        assert_eq_true(ProductRange::is_valid_id_part2(123123122));
     }
+
+    fn assert_eq_false(value: bool) { assert!(!value); }
+    fn assert_eq_true(value: bool) { assert!(value); }
 
     #[test]
     fn solve_part1() {
