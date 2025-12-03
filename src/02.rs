@@ -29,7 +29,14 @@ impl From<&str> for ProductRange {
 }
 
 impl ProductRange {
-    fn is_valid_id(id: i64) -> bool {
+    fn is_valid_id(id: i64, part2: bool) -> bool {
+        match part2 {
+            false => Self::is_valid_id_part1(id),
+            true => Self::is_valid_id_part2(id),
+        }
+    }
+
+    fn is_valid_id_part1(id: i64) -> bool {
         let s = id.to_string();
 
         if s.len().is_multiple_of(2) {
@@ -40,17 +47,35 @@ impl ProductRange {
 
         true
     }
+
+    fn is_valid_id_part2(id: i64) -> bool {
+        let s = id.to_string();
+
+        if ProductRange::repeats_at(&s, 5) { return false; }
+        if ProductRange::repeats_at(&s, 4) { return false; }
+        if ProductRange::repeats_at(&s, 3) { return false; }
+        if ProductRange::repeats_at(&s, 2) { return false; }
+        if ProductRange::repeats_at(&s, 1) { return false; }
+        true
+    }
+
+    fn repeats_at(s: &str, repeat_len: usize) -> bool {
+        s.len() > repeat_len &&
+            s.len().is_multiple_of(repeat_len) &&
+            s == s[0..repeat_len].repeat(s.len() / repeat_len)
+    }
+
 }
 
 impl InputModel {
 
-    fn sum_invalid_ids(&self) -> i64 {
+    fn sum_invalid_ids(&self, part2: bool) -> i64 {
         let mut sum = 0;
 
         for range in &self.ranges {
             //println!("Checking range {}-{}", range.start, range.end);
             for id in range.start..=range.end {
-                if !ProductRange::is_valid_id(id) {
+                if !ProductRange::is_valid_id(id, part2) {
                     sum += id;
                 }
             }
@@ -67,13 +92,12 @@ fn default_input() -> &'static str {
 pub fn part1() -> String {
     let model = InputModel::from(default_input());
 
-    model.sum_invalid_ids().to_string()
+    model.sum_invalid_ids(false).to_string()
 }
 
 pub fn part2() -> String {
-    //let model = InputModel::from(default_input());
-    //model.lines.len().to_string()
-    String::from("zz")
+    let model = InputModel::from(default_input());
+    model.sum_invalid_ids(true).to_string()
 }
 
 fn main() {
@@ -109,11 +133,23 @@ mod tests {
     }
 
     #[test]
-    fn test_is_valid_id() {
-        assert_eq!(ProductRange::is_valid_id(1212), false);
-        assert_eq!(ProductRange::is_valid_id(123123), false);
-        assert_eq!(ProductRange::is_valid_id(123456), true);
-        assert_eq!(ProductRange::is_valid_id(112233), true);
+    fn test_is_valid_id_part1() {
+        assert_eq!(ProductRange::is_valid_id_part1(1212), false);
+        assert_eq!(ProductRange::is_valid_id_part1(123123), false);
+        assert_eq!(ProductRange::is_valid_id_part1(123456), true);
+        assert_eq!(ProductRange::is_valid_id_part1(112233), true);
+    }
+
+    #[test]
+    fn test_is_valid_id_part2() {
+        assert_eq!(ProductRange::is_valid_id_part2(1212), false);
+        assert_eq!(ProductRange::is_valid_id_part2(123123), false);
+        assert_eq!(ProductRange::is_valid_id_part2(123456), true);
+        assert_eq!(ProductRange::is_valid_id_part2(112233), true);
+        assert_eq!(ProductRange::is_valid_id_part2(121212), false);
+        assert_eq!(ProductRange::is_valid_id_part2(121213), true);
+        assert_eq!(ProductRange::is_valid_id_part2(123123122), true);
+        assert_eq!(ProductRange::is_valid_id_part2(123123123), false);
     }
 
     #[test]
@@ -123,6 +159,6 @@ mod tests {
 
     #[test]
     fn solve_part2() {
-        assert_eq!(part2(), "zz");
+        assert_eq!(part2(), "69553832684");
     }
 }
