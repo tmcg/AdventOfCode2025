@@ -49,14 +49,19 @@ impl From<&str> for InputModel {
     }
 }
 
-
-
 impl BatteryBank {
     fn size(&self) -> usize {
         self.batteries.len()
     }
 
-    fn max_joltage(&self) -> i64 {
+    fn max_joltage(&self, part2: bool) -> i64 {
+        match part2 {
+            false => self.max_joltage_part1(),
+            true => self.max_joltage_part2(),
+        }
+    }
+
+    fn max_joltage_part1(&self) -> i64 {
         let mut result = 0;
         if self.size() >= 2 {
             let highest = self.batteries.iter().max_by_key(|b| b.capacity).unwrap();
@@ -78,7 +83,41 @@ impl BatteryBank {
 
         result
     }
+
+    fn max_joltage_part2(&self) -> i64 {
+        self.find_highest(12)
+    }
+
+    fn find_highest(&self, digits: usize) -> i64 {
+        let mut v: Vec<i64> = Vec::new();
+        self.collect_highest(&mut v, 0, digits);
+
+        //println!("find_highest: blen = {}, v = {:?}", self.batteries.len(), v);
+
+        v.iter().map(|n| n.to_string()).collect::<Vec<String>>().join("").parse::<i64>().unwrap()
+    }
+
+    fn collect_highest(&self, v: &mut Vec<i64>, ix_start: usize, digits: usize) {
+        let blen = self.batteries.len();
+        let start = ix_start as i64;
+        let limit = (blen - digits) as i64;
+
+        //println!("collect_highest: start = {}, limit = {}, digits = {}, vlen={}, v = {:?}", start, limit, digits, v.len(), v);
+
+        if digits == 0 || ix_start >= self.batteries.len() {
+            return;
+        }
+
+        let max_highest = self.batteries.iter().filter(|b| b.index >= start && b.index <= limit).max_by_key(|b| b.capacity).unwrap();
+        let first_highest = self.batteries.iter().find(|b| b.index >= start && b.capacity == max_highest.capacity).unwrap();
+
+        v.push(first_highest.capacity);
+
+        let fh = first_highest.index as usize;
+        self.collect_highest(v, fh + 1, digits - 1);
+    }
 }
+
 
 fn default_input() -> &'static str {
     include_input!(03)
@@ -87,14 +126,12 @@ fn default_input() -> &'static str {
 pub fn part1() -> String {
     let model = InputModel::from(default_input());
 
-    model.banks.iter().map(|b| b.max_joltage()).sum::<i64>().to_string()
+    model.banks.iter().map(|b| b.max_joltage(false)).sum::<i64>().to_string()
 }
 
 pub fn part2() -> String {
-    //let model = InputModel::from(default_input());
-    //model.banks.len().to_string()
-
-    String::from("zz")
+    let model = InputModel::from(default_input());
+    model.banks.iter().map(|b| b.max_joltage(true)).sum::<i64>().to_string()
 }
 
 fn main() {
@@ -122,15 +159,38 @@ mod tests {
     }
 
     #[test]
-    fn test_max_joltage() {
+    fn test_max_joltage_part1() {
         let input = "987654321111111\r\n811111111111119\r\n234234234234278\r\n818181911112111";
         let model = InputModel::from(input);
 
         assert_eq!(model.banks.len(), 4);
-        assert_eq!(model.banks[0].max_joltage(), 98);
-        assert_eq!(model.banks[1].max_joltage(), 89);
-        assert_eq!(model.banks[2].max_joltage(), 78);
-        assert_eq!(model.banks[3].max_joltage(), 92);
+        assert_eq!(model.banks[0].max_joltage(false), 98);
+        assert_eq!(model.banks[1].max_joltage(false), 89);
+        assert_eq!(model.banks[2].max_joltage(false), 78);
+        assert_eq!(model.banks[3].max_joltage(false), 92);
+    }
+
+    #[test]
+    fn test_max_joltage_part2() {
+        let input = "987654321111111\r\n811111111111119\r\n234234234234278\r\n818181911112111";
+        let model = InputModel::from(input);
+
+        assert_eq!(model.banks.len(), 4);
+        assert_eq!(model.banks[0].max_joltage(true), 987654321111);
+        assert_eq!(model.banks[1].max_joltage(true), 811111111119);
+        assert_eq!(model.banks[2].max_joltage(true), 434234234278);
+        assert_eq!(model.banks[3].max_joltage(true), 888911112111);
+    }
+
+    #[test]
+    fn test_find_highest() {
+
+        assert_eq!(BatteryBank::from("123456789").find_highest(3), 789);
+        assert_eq!(BatteryBank::from("8119").find_highest(2), 89);
+        assert_eq!(BatteryBank::from("987654321111111").find_highest(2), 98);
+        assert_eq!(BatteryBank::from("811111111111119").find_highest(2), 89);
+        assert_eq!(BatteryBank::from("234234234234278").find_highest(2), 78);
+        assert_eq!(BatteryBank::from("818181911112111").find_highest(2), 92);
     }
 
     #[test]
@@ -140,6 +200,6 @@ mod tests {
 
     #[test]
     fn solve_part2() {
-        assert_eq!(part2(), "zz");
+        assert_eq!(part2(), "170418192256861");
     }
 }
