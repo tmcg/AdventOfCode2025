@@ -1,5 +1,6 @@
 
 use advent::*;
+use itertools::Itertools;
 
 type IngredientId = i64;
 
@@ -51,6 +52,32 @@ impl Inventory {
             self.fresh.iter().any(|range| range.contains(item))
         }).count() as i64
     }
+
+    fn count_fresh_ranges(&self) -> i64 {
+        let mut consolid: Vec<(i64,i64)> = Vec::new();
+        let mut prev_start = -1;
+        let mut prev_end = -1;
+
+        for range in self.fresh.iter().sorted_by_key(|x| x.start) {
+            let extend_range = range.start >= prev_start && range.start <= prev_end;
+
+            if extend_range && !consolid.is_empty() {
+                // current range falls within last range, extend the last range
+                let (pop_start, pop_end) = consolid.pop().unwrap();
+                prev_start = pop_start;
+                prev_end = pop_end.max(range.end);
+            } else {
+                // current range is a new range, just add it
+                prev_start = range.start;
+                prev_end = range.end;
+            }
+            consolid.push((prev_start, prev_end));
+        }
+
+        //println!("Consolidated Ranges: {:?}", consolid);
+
+        consolid.iter().map(|(start, end)| end - start + 1).sum::<i64>()
+    }
 }
 
 fn default_input() -> &'static str {
@@ -64,7 +91,7 @@ pub fn part1() -> String {
 
 pub fn part2() -> String {
     let inv = Inventory::from(default_input());
-    inv.fresh.len().to_string()
+    inv.count_fresh_ranges().to_string()
 }
 
 fn main() {
@@ -103,12 +130,21 @@ mod tests {
     }   
 
     #[test]
+    fn test_count_fresh_ranges() {
+        let input = "3-5\r\n10-14\r\n16-20\r\n12-18\r\n\r\n1\r\n5\r\n8\r\n11\r\n17\r\n32";
+        let inv = Inventory::from(input);
+        let count = inv.count_fresh_ranges();
+        assert_eq!(count, 14); // consolidated ranges are 3-5, 10-20
+    }
+
+
+    #[test]
     fn solve_part1() {
         assert_eq!(part1(), "739");
     }
 
     #[test]
     fn solve_part2() {
-        assert_eq!(part2(), "182");
+        assert_eq!(part2(), "344486348901788");
     }
 }
