@@ -31,9 +31,9 @@ path = "src/03.rs"
 name = "day04"
 path = "src/04.rs"
 
-#[[bin]]
-#name = "day05"
-#path = "src/05.rs"
+[[bin]]
+name = "day05"
+path = "src/05.rs"
 
 #[[bin]]
 #name = "day06"
