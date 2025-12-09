@@ -1,6 +1,7 @@
 
 pub mod shared;
 use std::cmp::Ordering;
+use std::collections::HashMap;
 
 #[macro_export]
 macro_rules! include_input {
@@ -11,6 +12,18 @@ macro_rules! include_input {
 
 pub fn input_as_lines(s: &str) -> Vec<String> {
     s.split("\r\n").map(|x| x.to_owned()).collect::<Vec<_>>()
+}
+
+pub fn input_as_grid(s: &str) -> HashMap<(i64, i64), char> {
+    let mut grid = HashMap::new();
+    let lines = input_as_lines(s);
+
+    for (y, line) in lines.iter().enumerate() {
+        for (x, ch) in line.chars().enumerate() {
+            grid.insert((x as i64, y as i64), ch);
+        }
+    }
+    grid
 }
 
 pub fn input_as_ints(s: &str) -> Vec<i64> {
